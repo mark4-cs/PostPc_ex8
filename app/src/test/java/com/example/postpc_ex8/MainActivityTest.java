@@ -28,11 +28,12 @@ public class MainActivityTest {
         activityController = Robolectric.buildActivity(MainActivity.class);
         activityUnderTest = activityController.get();
         activityController.create().start().resume();
+        calcApplication.itemToCalculateArrayList.clear();
     }
 
     @Test
     public void flowTest1(){
-        // on startup list of items to calculate is empty
+        // on startup list of items to calculate is empty  ("first startup test")
         assertTrue(calcApplication.itemToCalculateArrayList.isEmpty());
     }
 
