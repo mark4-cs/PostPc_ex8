@@ -8,6 +8,8 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.google.common.util.concurrent.ListenableFuture;
+
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 
@@ -26,15 +28,17 @@ public class MyRootCalculatorWorker extends Worker {
         long startFrom = getInputData().getLong("startFrom", 2);
         long root1 = -1;
         long root2 = -1;
+        int progress = 0;
         for (long i = startFrom; i <=  Math.sqrt(total); i++){
-            setProgressAsync(new Data.Builder().putLong("current", i).putLong("total", total).build());
+            progress = (int) ((double) i*100 / Math.sqrt(total));
+            setProgressAsync(new Data.Builder().putInt("progress", progress).putLong("lastNumber", i).build());
             if (total % i == 0){
                 root1 = i;
                 root2 = total / i;
                 break;
             }
             if (System.currentTimeMillis() - start > 600000){
-                return Result.failure(new Data.Builder().putLong("current", i).build());
+                return Result.failure(new Data.Builder().putInt("progress", progress).putLong("lastNumber", i).build());
             }
         }
         if (root1 == -1){root1 = total; root2 = 1;}

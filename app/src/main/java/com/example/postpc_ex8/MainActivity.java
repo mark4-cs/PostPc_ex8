@@ -37,7 +37,6 @@ import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
     Context ctx = null;
-    ArrayList<ItemToCalculate> itemToCalculateArrayList;
     ItemToCalculateAdapter adapter = null;
 
 
@@ -46,8 +45,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (ctx == null){ctx = this;}
-        if (itemToCalculateArrayList == null){itemToCalculateArrayList = calcApplication.itemToCalculateArrayList;}
-        if (adapter == null) {adapter = new ItemToCalculateAdapter(itemToCalculateArrayList);}
+        if (adapter == null) {adapter = new ItemToCalculateAdapter(calcApplication.data.getValue());}
         RecyclerView rvItems = findViewById(R.id.rvNumbersToCalc);
 
         rvItems.setAdapter(adapter);
@@ -68,10 +66,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         long number = Long.parseLong(input.getText().toString());
                         ItemToCalculate itemToCalculate = new ItemToCalculate(number);
-                        itemToCalculateArrayList.add(itemToCalculate);
-                        Collections.sort(itemToCalculateArrayList, new ItemToCalculateComparator());
-                        adapter.notifyDataSetChanged();
-                        initWork(itemToCalculate, 2);
+                        ((calcApplication)getApplication()).initWork(itemToCalculate, 2);
                     }
                 });
                 alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -82,51 +77,17 @@ public class MainActivity extends AppCompatActivity {
                 alert.show();
             }
         });
-    }
 
-    public void removeItemFromRecycleView(ItemToCalculate itemToCalculate){
-        itemToCalculateArrayList.remove(itemToCalculate);
-        adapter.notifyDataSetChanged();
-    }
-
-    private void initWork(ItemToCalculate itemToCalculate, long currentProgress){
-        long number = itemToCalculate.input;
-        WorkManager wm = WorkManager.getInstance(ctx);
-        OneTimeWorkRequest oneTimeWorkRequest = new OneTimeWorkRequest.Builder(MyRootCalculatorWorker.class)
-                .setInputData(new Data.Builder().putLong("target", number).putLong("startFrom", currentProgress).build())
-                .build();
-        wm.enqueue(oneTimeWorkRequest);
-        LiveData<WorkInfo> wild = wm.getWorkInfoByIdLiveData(oneTimeWorkRequest.getId());
-        wild.observeForever(new Observer<WorkInfo>() {
+        calcApplication.data.observeForever(new Observer<ArrayList<ItemToCalculate>>() {
             @Override
-            public void onChanged(WorkInfo workInfo) {
-                long current = workInfo.getProgress().getLong("current", 0);
-                long total = workInfo.getProgress().getLong("total", -1);
-                if (total != -1){
-                    itemToCalculate.curProgress = (int) (((double)current / total) * 100);
-                    itemToCalculate.workerLastNumber = current;
-                    Collections.sort(itemToCalculateArrayList, new ItemToCalculateComparator());
-                    adapter.notifyDataSetChanged();
-                }
-                if (workInfo.getState() == WorkInfo.State.SUCCEEDED){
-                    itemToCalculate.curProgress = 100;
-                    itemToCalculate.workerLastNumber = itemToCalculate.input;
-                    long root1 = workInfo.getOutputData().getLong("root1", 0);
-                    long root2 = workInfo.getOutputData().getLong("root2", -1);
-                    itemToCalculate.firstRoot = root1;
-                    itemToCalculate.secondRoot = root2;
-                    Collections.sort(itemToCalculateArrayList, new ItemToCalculateComparator());
-                    adapter.notifyDataSetChanged();
-                }
-
-                if (workInfo.getState() == WorkInfo.State.FAILED){
-                    long currentProgress = workInfo.getOutputData().getLong("current", 2);
-                    itemToCalculate.workerLastNumber = currentProgress;
-                    initWork(itemToCalculate, currentProgress);
-                }
-
+            public void onChanged(ArrayList<ItemToCalculate> itemToCalculates) {
+                adapter.notifyDataSetChanged();
             }
         });
     }
 
+    public void removeItemFromRecycleView(ItemToCalculate itemToCalculate){
+        calcApplication.itemToCalculateArrayList.remove(itemToCalculate);
+        adapter.notifyDataSetChanged();
+    }
 }
