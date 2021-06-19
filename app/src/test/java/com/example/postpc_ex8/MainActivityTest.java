@@ -33,7 +33,7 @@ public class MainActivityTest {
     @Test
     public void flowTest1(){
         // on startup list of items to calculate is empty
-        assertTrue(activityUnderTest.itemToCalculateArrayList.isEmpty());
+        assertTrue(calcApplication.itemToCalculateArrayList.isEmpty());
     }
 
     @Test
@@ -45,14 +45,14 @@ public class MainActivityTest {
         calculated.firstRoot = 1;
         calculated.secondRoot = 5;
 
-        activityUnderTest.itemToCalculateArrayList.add(calculated);
-        activityUnderTest.itemToCalculateArrayList.add(new ItemToCalculate(4));
+        calcApplication.itemToCalculateArrayList.add(calculated);
+        calcApplication.itemToCalculateArrayList.add(new ItemToCalculate(4));
 
-        Collections.sort(activityUnderTest.itemToCalculateArrayList, new ItemToCalculateComparator());
+        Collections.sort(calcApplication.itemToCalculateArrayList, new ItemToCalculateComparator());
 
-        assertEquals(calculated, activityUnderTest.itemToCalculateArrayList.get(1));
+        assertEquals(calculated, calcApplication.itemToCalculateArrayList.get(1));
 
-        activityUnderTest.itemToCalculateArrayList.clear();
+        calcApplication.itemToCalculateArrayList.clear();
     }
 
     @Test
@@ -67,19 +67,19 @@ public class MainActivityTest {
         ItemToCalculate small_inprog = new ItemToCalculate(10);
         ItemToCalculate big_inprog = new ItemToCalculate(30);
 
-        activityUnderTest.itemToCalculateArrayList.add(calculated);
-        activityUnderTest.itemToCalculateArrayList.add(small_inprog);
-        activityUnderTest.itemToCalculateArrayList.add(big_inprog);
-        Collections.sort(activityUnderTest.itemToCalculateArrayList, new ItemToCalculateComparator());
+        calcApplication.itemToCalculateArrayList.add(calculated);
+        calcApplication.itemToCalculateArrayList.add(small_inprog);
+        calcApplication.itemToCalculateArrayList.add(big_inprog);
+        Collections.sort(calcApplication.itemToCalculateArrayList, new ItemToCalculateComparator());
 
         shadowOf(getMainLooper()).idle();
         // expected to small_inprog be first, second big_inprog, last calculated
 
-        assertEquals(activityUnderTest.itemToCalculateArrayList.get(0), small_inprog);
-        assertEquals(activityUnderTest.itemToCalculateArrayList.get(1), big_inprog);
-        assertEquals(activityUnderTest.itemToCalculateArrayList.get(2), calculated);
+        assertEquals(calcApplication.itemToCalculateArrayList.get(0), small_inprog);
+        assertEquals(calcApplication.itemToCalculateArrayList.get(1), big_inprog);
+        assertEquals(calcApplication.itemToCalculateArrayList.get(2), calculated);
 
 
-        activityUnderTest.itemToCalculateArrayList.clear();
+        calcApplication.itemToCalculateArrayList.clear();
     }
 }
