@@ -109,7 +109,7 @@ public class calcApplication extends Application {
 
     public MutableLiveData<ArrayList<ItemToCalculate>> getData(){return data;}
 
-    public void saveTosp(){
+    public static void saveTosp(){
         String s = "";
         for (ItemToCalculate i : itemToCalculateArrayList){
             s = s.concat(i.itemTotextRepr());

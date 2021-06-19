@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void removeItemFromRecycleView(ItemToCalculate itemToCalculate){
         calcApplication.itemToCalculateArrayList.remove(itemToCalculate);
+        calcApplication.saveTosp();
         adapter.notifyDataSetChanged();
     }
 }
