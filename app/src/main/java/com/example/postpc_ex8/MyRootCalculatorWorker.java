@@ -30,8 +30,10 @@ public class MyRootCalculatorWorker extends Worker {
         long root2 = -1;
         int progress = 0;
         for (long i = startFrom; i <=  Math.sqrt(total); i++){
-            progress = (int) ((double) i*100 / Math.sqrt(total));
-            setProgressAsync(new Data.Builder().putInt("progress", progress).putLong("lastNumber", i).build());
+            if (i % 10000 == 0){
+                progress = (int) ((double) i*100 / Math.sqrt(total));
+                setProgressAsync(new Data.Builder().putInt("progress", progress).putLong("lastNumber", i).build());
+            }
             if (total % i == 0){
                 root1 = i;
                 root2 = total / i;
