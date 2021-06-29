@@ -64,7 +64,13 @@ public class MainActivity extends AppCompatActivity {
                 alert.setView(input);
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        long number = Long.parseLong(input.getText().toString());
+                        long number;
+                        try {
+                            number = Long.parseLong(input.getText().toString());
+                        }catch (Exception NumberFormatException){
+                            Toast.makeText(ctx, "Number is too big!!!", Toast.LENGTH_LONG).show();
+                            return;
+                        }
                         ItemToCalculate itemToCalculate = new ItemToCalculate(number);
                         ((calcApplication)getApplication()).initWork(itemToCalculate, 2);
                     }
